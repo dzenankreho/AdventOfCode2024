@@ -128,7 +128,7 @@ int main() {
     std::cout << "\tPart 1: " << solutionPart(MY_INPUT_PATH, operatorsPart1) << std::endl;
     std::cout << "\tPart 2: " << solutionPart(MY_INPUT_PATH, operatorsPart2) << std::endl;
     std::cout << "My input runtime [ms]:" << std::endl;
-    std::cout << "\tPart 1: " << measureTime([](){ solutionPart(MY_INPUT_PATH, operatorsPart1); }, 100) << std::endl;
+    std::cout << "\tPart 1: " << measureTime([](){ solutionPart(MY_INPUT_PATH, operatorsPart1); }, 1000) << std::endl;
     std::cout << "\tPart 2: " << measureTime([](){ solutionPart(MY_INPUT_PATH, operatorsPart2); }, 1000) << std::endl;
 
     return 0;
