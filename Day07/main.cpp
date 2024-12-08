@@ -84,7 +84,7 @@ bool isEquationTrue(
     return false;
 }
 
-long long solutionPart(const char* inputPath, const std::set<Operator> &operators) {
+long long solution(const char* inputPath, const std::set<Operator> &operators) {
     std::ifstream input(inputPath);
 
     long long totalCalibrationResult{};
@@ -122,14 +122,14 @@ int main() {
     static std::set<Operator> operatorsPart2{ Operator::add, Operator::multiply, Operator::concatenation };
 
     std::cout << "Test inputs:" << std::endl;
-    std::cout << "\tPart 1: " << solutionPart(TEST_INPUT_PART1_PATH, operatorsPart1) << std::endl;
-    std::cout << "\tPart 2: " << solutionPart(TEST_INPUT_PART2_PATH, operatorsPart2) << std::endl;
+    std::cout << "\tPart 1: " << solution(TEST_INPUT_PART1_PATH, operatorsPart1) << std::endl;
+    std::cout << "\tPart 2: " << solution(TEST_INPUT_PART2_PATH, operatorsPart2) << std::endl;
     std::cout << "My input:" << std::endl;
-    std::cout << "\tPart 1: " << solutionPart(MY_INPUT_PATH, operatorsPart1) << std::endl;
-    std::cout << "\tPart 2: " << solutionPart(MY_INPUT_PATH, operatorsPart2) << std::endl;
+    std::cout << "\tPart 1: " << solution(MY_INPUT_PATH, operatorsPart1) << std::endl;
+    std::cout << "\tPart 2: " << solution(MY_INPUT_PATH, operatorsPart2) << std::endl;
     std::cout << "My input runtime [ms]:" << std::endl;
-    std::cout << "\tPart 1: " << measureTime([](){ solutionPart(MY_INPUT_PATH, operatorsPart1); }, 1000) << std::endl;
-    std::cout << "\tPart 2: " << measureTime([](){ solutionPart(MY_INPUT_PATH, operatorsPart2); }, 1000) << std::endl;
+    std::cout << "\tPart 1: " << measureTime([](){ solution(MY_INPUT_PATH, operatorsPart1); }, 1000) << std::endl;
+    std::cout << "\tPart 2: " << measureTime([](){ solution(MY_INPUT_PATH, operatorsPart2); }, 1000) << std::endl;
 
     return 0;
 }
