@@ -126,7 +126,7 @@ int solutionPart2(const char* inputPath) {
     Position::maxX = topographicMap.size() - 1;
     Position::maxY = topographicMap.front().length() - 1;
 
-    int sumOfTrailheadScores{};
+    int sumOfTrailheadRanks{};
 
     for (const Position& trailhead : trailheads) {
         std::stack<Position> toVisit;
@@ -136,7 +136,7 @@ int solutionPart2(const char* inputPath) {
             Position currentPosition{ toVisit.top() };
             toVisit.pop();
 
-            sumOfTrailheadScores += topographicMap.at(currentPosition.x).at(currentPosition.y) == '9';
+            sumOfTrailheadRanks += topographicMap.at(currentPosition.x).at(currentPosition.y) == '9';
 
             for (
                 const Position& increment : {
@@ -155,7 +155,7 @@ int solutionPart2(const char* inputPath) {
         }
     }
 
-    return sumOfTrailheadScores;
+    return sumOfTrailheadRanks;
 }
 
 
