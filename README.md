@@ -15,3 +15,4 @@ My [Advent of Code 2024](https://adventofcode.com/2024) solutions in the C++ pro
 |Day 7|[Problem](https://adventofcode.com/2024/day/7)|[Solution](Day07/main.cpp)|3.981|78.564|
 |Day 8|[Problem](https://adventofcode.com/2024/day/8)|[Solution](Day08/main.cpp)|0.143|0.225|
 |Day 9|[Problem](https://adventofcode.com/2024/day/9)|[Solution](Day09/main.cpp)|3.409|303.72|
+|Day 10|[Problem](https://adventofcode.com/2024/day/10)|[Solution](Day10/main.cpp)|0.725|0.217|
