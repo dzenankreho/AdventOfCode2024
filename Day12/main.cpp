@@ -31,7 +31,7 @@ struct IsValidPosition {
 };
 
 
-void findAllPlotsInRegion(
+void findAllPlantsInRegion(
     const std::vector<std::string>& gardenMap,
     std::vector<std::vector<bool>>& visited,
     const char plantType,
@@ -55,10 +55,10 @@ void findAllPlotsInRegion(
     visited.at(x).at(y) = true;
     area++;
 
-    findAllPlotsInRegion(gardenMap, visited, plantType, area, perimeter, x + 1, y);
-    findAllPlotsInRegion(gardenMap, visited, plantType, area, perimeter, x - 1, y);
-    findAllPlotsInRegion(gardenMap, visited, plantType, area, perimeter, x, y + 1);
-    findAllPlotsInRegion(gardenMap, visited, plantType, area, perimeter, x, y - 1);
+    findAllPlantsInRegion(gardenMap, visited, plantType, area, perimeter, x + 1, y);
+    findAllPlantsInRegion(gardenMap, visited, plantType, area, perimeter, x - 1, y);
+    findAllPlantsInRegion(gardenMap, visited, plantType, area, perimeter, x, y + 1);
+    findAllPlantsInRegion(gardenMap, visited, plantType, area, perimeter, x, y - 1);
 }
 
 
@@ -83,7 +83,7 @@ int solutionPart1(const char* inputPath) {
             }
 
             int area{}, perimeter{};
-            findAllPlotsInRegion(gardenMap, visited, gardenMap.at(i).at(j), area, perimeter, i, j);
+            findAllPlantsInRegion(gardenMap, visited, gardenMap.at(i).at(j), area, perimeter, i, j);
             totalPriceOfFencing += area * perimeter;
         }
     }
@@ -100,7 +100,7 @@ struct RegionBounds {
 };
 
 
-void findAllPlotsInRegion(
+void findAllPlantsInRegion(
         const std::vector<std::string>& gardenMap,
         std::vector<std::vector<bool>>& visitedInGarden,
         std::vector<std::vector<bool>>& visitedInRegion,
@@ -129,10 +129,10 @@ void findAllPlotsInRegion(
     visitedInGarden.at(x).at(y) = visitedInRegion.at(x).at(y) = true;
     area++;
 
-    findAllPlotsInRegion(gardenMap, visitedInGarden, visitedInRegion, plantType, area, regionBounds, x + 1, y);
-    findAllPlotsInRegion(gardenMap, visitedInGarden, visitedInRegion, plantType, area, regionBounds, x - 1, y);
-    findAllPlotsInRegion(gardenMap, visitedInGarden, visitedInRegion, plantType, area, regionBounds, x, y + 1);
-    findAllPlotsInRegion(gardenMap, visitedInGarden, visitedInRegion, plantType, area, regionBounds, x, y - 1);
+    findAllPlantsInRegion(gardenMap, visitedInGarden, visitedInRegion, plantType, area, regionBounds, x + 1, y);
+    findAllPlantsInRegion(gardenMap, visitedInGarden, visitedInRegion, plantType, area, regionBounds, x - 1, y);
+    findAllPlantsInRegion(gardenMap, visitedInGarden, visitedInRegion, plantType, area, regionBounds, x, y + 1);
+    findAllPlantsInRegion(gardenMap, visitedInGarden, visitedInRegion, plantType, area, regionBounds, x, y - 1);
 }
 
 
@@ -161,15 +161,15 @@ int solutionPart2(const char* inputPath) {
             std::vector<std::vector<bool>> visitedInRegion(
                     IsValidPosition::maxX + 1, std::vector<bool>(IsValidPosition::maxY + 1, false)
             );
-            findAllPlotsInRegion(
-                gardenMap,
-                visitedInGarden,
-                visitedInRegion,
-                gardenMap.at(i).at(j),
-                area,
-                regionBounds,
-                i,
-                j
+            findAllPlantsInRegion(
+                    gardenMap,
+                    visitedInGarden,
+                    visitedInRegion,
+                    gardenMap.at(i).at(j),
+                    area,
+                    regionBounds,
+                    i,
+                    j
             );
 
             int numOfSides{};
