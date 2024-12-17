@@ -16,10 +16,10 @@
 std::string solutionPart1(const char* inputPath) {
     std::ifstream input(inputPath);
 
-    std::unordered_map<char, int> registers;
+    std::unordered_map<char, long long> registers;
     char currentRegister = 'A';
     for (std::string line; std::getline(input, line) && !line.empty(); ++currentRegister) {
-        registers[currentRegister] = std::stoi(line.substr(line.rfind(' ') + 1));
+        registers[currentRegister] = std::stoll(line.substr(line.rfind(' ') + 1));
     }
 
     std::string programStr;
@@ -38,9 +38,9 @@ std::string solutionPart1(const char* inputPath) {
         switch (program.at(instrPtr)) {
             case 0:
                 if (program.at(instrPtr + 1) < 4) {
-                    registers.at('A') /= 1 << program.at(instrPtr + 1);
+                    registers.at('A') /= 1ll << program.at(instrPtr + 1);
                 } else {
-                    registers.at('A') /= 1 << registers.at('A' + program.at(instrPtr + 1) - 4);
+                    registers.at('A') /= 1ll << registers.at('A' + program.at(instrPtr + 1) - 4);
                 }
                 break;
 
@@ -79,6 +79,76 @@ std::string solutionPart1(const char* inputPath) {
 
             case 6:
                 if (program.at(instrPtr + 1) < 4) {
+                    registers.at('B') = registers.at('A') / (1ll << program.at(instrPtr + 1));
+                } else {
+                    registers.at('B') = registers.at('A') / (1ll << registers.at('A' + program.at(instrPtr + 1) - 4));
+                }
+                break;
+
+            case 7:
+                if (program.at(instrPtr + 1) < 4) {
+                    registers.at('C') = registers.at('A') / (1ll << program.at(instrPtr + 1));
+                } else {
+                    registers.at('C') = registers.at('A') / (1ll << registers.at('A' + program.at(instrPtr + 1) - 4));
+                }
+                break;
+        }
+    }
+
+    return output;
+}
+
+
+int getFirstOutputForRegisterAValue(
+    const std::vector<int>& program,
+    const long long initRegAValue
+) {
+    std::unordered_map<char, long long> registers {
+        { 'A', initRegAValue },
+        { 'B', 0 },
+        { 'C', 0 }
+    };
+
+    for (int instrPtr{}; instrPtr < program.size(); instrPtr += 2) {
+        switch (program.at(instrPtr)) {
+            case 0:
+                if (program.at(instrPtr + 1) < 4) {
+                    registers.at('A') /= 1 << program.at(instrPtr + 1);
+                } else {
+                    registers.at('A') /= 1 << registers.at('A' + program.at(instrPtr + 1) - 4);
+                }
+                break;
+
+            case 1:
+                registers.at('B') ^= program.at(instrPtr + 1);
+                break;
+
+            case 2:
+                if (program.at(instrPtr + 1) < 4) {
+                    registers.at('B') = program.at(instrPtr + 1) % 8;
+                } else {
+                    registers.at('B') = registers.at('A' + program.at(instrPtr + 1) - 4) % 8;
+                }
+                break;
+
+            case 3:
+                if (registers.at('A') != 0) {
+                    instrPtr = program.at(instrPtr + 1) - 2;
+                }
+                break;
+
+            case 4:
+                registers.at('B') ^= registers.at('C');
+                break;
+
+            case 5:
+                if (program.at(instrPtr + 1) < 4) {
+                    return program.at(instrPtr + 1) % 8;
+                }
+                return registers.at('A' + program.at(instrPtr + 1) - 4) % 8;
+
+            case 6:
+                if (program.at(instrPtr + 1) < 4) {
                     registers.at('B') = registers.at('A') / (1 << program.at(instrPtr + 1));
                 } else {
                     registers.at('B') = registers.at('A') / (1 << registers.at('A' + program.at(instrPtr + 1) - 4));
@@ -95,18 +165,40 @@ std::string solutionPart1(const char* inputPath) {
         }
     }
 
-    return output;
+    return -1;
+}
+
+
+std::optional<long long> findRegisterAValueThatOutputsCopy(
+    const std::vector<int>& program,
+    const long long initRegAValue,
+    const int reverseOutputPtr
+) {
+    for (long long regAValue{ initRegAValue }; regAValue < initRegAValue + 8; ++regAValue) {
+        if (*(program.end() - (reverseOutputPtr + 1)) == getFirstOutputForRegisterAValue(program, regAValue)) {
+            if (reverseOutputPtr + 1 == program.size()) {
+                return regAValue;
+            }
+
+            if (
+                auto result{
+                    findRegisterAValueThatOutputsCopy(program, regAValue * 8, reverseOutputPtr + 1)
+                };
+                result
+            ) {
+                return result;
+            }
+        }
+    }
+
+    return std::nullopt;
 }
 
 
 long long solutionPart2(const char* inputPath) {
     std::ifstream input(inputPath);
 
-    std::unordered_map<char, long long> registers;
-    char currentRegister = 'A';
-    for (std::string line; std::getline(input, line) && !line.empty(); ++currentRegister) {
-        registers[currentRegister] = std::stoi(line.substr(line.rfind(' ') + 1));
-    }
+    for (std::string line; std::getline(input, line) && !line.empty(); );
 
     std::string programStr;
     input >> programStr;
@@ -118,94 +210,7 @@ long long solutionPart2(const char* inputPath) {
         input >> comma;
     }
 
-    std::optional<long long> registerA{ std::nullopt };
-    for (long long regAValue{ 1ll << (3 * (long long)(program.size() - 1)) }; !registerA; ++regAValue) {
-        registers.at('A') = regAValue;
-        int outPtr{};
-        bool matching{ true };
-
-        for (int instrPtr{}; instrPtr < program.size(); instrPtr += 2) {
-            switch (program.at(instrPtr)) {
-                case 0:
-                    if (program.at(instrPtr + 1) < 4) {
-                        registers.at('A') /= 1ll << program.at(instrPtr + 1);
-                    } else {
-                        registers.at('A') /= 1ll << registers.at('A' + program.at(instrPtr + 1) - 4);
-                    }
-                    break;
-
-                case 1:
-                    registers.at('B') ^= program.at(instrPtr + 1);
-                    break;
-
-                case 2:
-                    if (program.at(instrPtr + 1) < 4) {
-                        registers.at('B') = program.at(instrPtr + 1) % 8;
-                    } else {
-                        registers.at('B') = registers.at('A' + program.at(instrPtr + 1) - 4) % 8;
-                    }
-                    break;
-
-                case 3:
-                    if (registers.at('A') != 0) {
-                        instrPtr = program.at(instrPtr + 1) - 2;
-                    }
-                    break;
-
-                case 4:
-                    registers.at('B') ^= registers.at('C');
-                    break;
-
-                case 5:
-                    if (program.at(instrPtr + 1) < 4) {
-                        if (
-                            outPtr >= program.size() ||
-                            program.at(outPtr) != program.at(instrPtr + 1) % 8
-                        ) {
-                            matching = false;
-                        } else {
-                            ++outPtr;
-                        }
-                    } else {
-                        if (
-                            outPtr >= program.size() ||
-                            program.at(outPtr) != registers.at('A' + program.at(instrPtr + 1) - 4) % 8
-                        ) {
-                            matching = false;
-                        } else {
-                            ++outPtr;
-                        }
-                    }
-                    break;
-
-                case 6:
-                    if (program.at(instrPtr + 1) < 4) {
-                        registers.at('B') = registers.at('A') / (1ll << program.at(instrPtr + 1));
-                    } else {
-                        registers.at('B') = registers.at('A') / (1ll << registers.at('A' + program.at(instrPtr + 1) - 4));
-                    }
-                    break;
-
-                case 7:
-                    if (program.at(instrPtr + 1) < 4) {
-                        registers.at('C') = registers.at('A') / (1ll << program.at(instrPtr + 1));
-                    } else {
-                        registers.at('C') = registers.at('A') / (1ll << registers.at('A' + program.at(instrPtr + 1) - 4));
-                    }
-                    break;
-            }
-
-            if (!matching) {
-                break;
-            }
-        }
-
-        if (outPtr == program.size()) {
-            registerA = regAValue;
-        }
-    }
-
-    return *registerA;
+    return *findRegisterAValueThatOutputsCopy(program, 0, 0);
 }
 
 
@@ -226,20 +231,10 @@ int main() {
     std::cout << "\tPart 2: " << solutionPart2(TEST_INPUT_PART2_PATH) << std::endl;
     std::cout << "My input:" << std::endl;
     std::cout << "\tPart 1: " << solutionPart1(MY_INPUT_PATH) << std::endl;
-//    std::cout << "\tPart 2: " << solutionPart2(MY_INPUT_PATH) << std::endl;
+    std::cout << "\tPart 2: " << solutionPart2(MY_INPUT_PATH) << std::endl;
     std::cout << "My input runtime [ms]:" << std::endl;
     std::cout << "\tPart 1: " << measureTime([](){ solutionPart1(MY_INPUT_PATH); }, 1000) << std::endl;
-//    std::cout << "\tPart 2: " << measureTime([](){ solutionPart2(MY_INPUT_PATH); }, 1000) << std::endl;
+    std::cout << "\tPart 2: " << measureTime([](){ solutionPart2(MY_INPUT_PATH); }, 1000) << std::endl;
 
     return 0;
 }
-
-
-// 2,4
-// 1,5
-// 7,5
-// 1,6
-// 0,3
-// 4,0
-// 5,5
-// 3,0
