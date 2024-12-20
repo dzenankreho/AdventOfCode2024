@@ -23,7 +23,17 @@ struct Position {
     bool operator==(const Position& position) const {
         return x == position.x && y == position.y;
     }
+
+    Position operator*(int num) const {
+        return { x * num, y * num };
+    }
+
+    friend Position operator*(int num, const Position& position);
 };
+
+inline Position operator*(int num, const Position& position) {
+    return position * num;
+}
 
 template <>
 struct std::hash<Position> {
@@ -82,16 +92,11 @@ int solutionPart1(const char* inputPath, int minPicosecondsSaved) {
     int numOfCheatsThatSaveMoreThanMinPicoseconds{};
     for (const auto& position : picosecondsAtEachPosition) {
         for (const Position& increment : positionIncrements) {
-            if (
-                Position firstCheatPosition{ position.first + increment },
-                         secondCheatPosition{ firstCheatPosition + increment };
-                !picosecondsAtEachPosition.contains(firstCheatPosition) &&
-                picosecondsAtEachPosition.contains(secondCheatPosition) &&
-                    picosecondsAtEachPosition.at(secondCheatPosition) -
-                    picosecondsAtEachPosition.at(position.first) > minPicosecondsSaved
-            ) {
-                numOfCheatsThatSaveMoreThanMinPicoseconds++;
-            }
+            Position positionAfterCheat{ position.first + 2 * increment };
+            numOfCheatsThatSaveMoreThanMinPicoseconds +=
+                picosecondsAtEachPosition.contains(positionAfterCheat) &&
+                picosecondsAtEachPosition.at(positionAfterCheat) - (2 + picosecondsAtEachPosition.at(position.first))
+                     >= minPicosecondsSaved;
         }
     }
 
@@ -119,7 +124,7 @@ double measureTime(const std::function<void()>& func, int numOfRuns) {
 
 int main() {
     std::cout << "Test inputs:" << std::endl;
-    std::cout << "\tPart 1: " << solutionPart1(TEST_INPUT_PART1_PATH, 0) << std::endl;
+    std::cout << "\tPart 1: " << solutionPart1(TEST_INPUT_PART1_PATH, 20) << std::endl;
 //    std::cout << "\tPart 2: " << solutionPart2(TEST_INPUT_PART2_PATH) << std::endl;
     std::cout << "My input:" << std::endl;
     std::cout << "\tPart 1: " << solutionPart1(MY_INPUT_PATH, 100) << std::endl;
