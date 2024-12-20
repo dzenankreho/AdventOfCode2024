@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <cmath>
 
 
 #define MY_INPUT_PATH R"(..\inputDay20.txt)"
@@ -26,6 +27,10 @@ struct Position {
 
     Position operator*(int num) const {
         return { x * num, y * num };
+    }
+
+    int manhattanDistance(const Position& position) const {
+        return std::abs(x - position.x) + std::abs(y - position.y);
     }
 
     friend Position operator*(int num, const Position& position);
@@ -104,10 +109,77 @@ int solutionPart1(const char* inputPath, int minPicosecondsSaved) {
 }
 
 
-int solutionPart2(const char* inputPath) {
+int solutionPart2(const char* inputPath, int minPicosecondsSaved) {
     std::ifstream input(inputPath);
 
-    return 0;
+    std::vector<std::string> racetrack;
+    Position start, end;
+    for (std::string line; std::getline(input, line); racetrack.push_back(line)) {
+        if (std::size_t found{ line.find('S') }; found != std::string::npos) {
+            start.x = racetrack.size();
+            start.y = found;
+        }
+
+        if (std::size_t found{ line.find('E') }; found != std::string::npos) {
+            end.x = racetrack.size();
+            end.y = found;
+        }
+    }
+
+    std::unordered_map<Position, int> picosecondsAtEachPosition;
+    Position currentPosition{ start };
+
+    std::vector<Position> positionIncrements {
+        Position{ -1,  0 },
+        Position{  1,  0 },
+        Position{  0, -1 },
+        Position{  0,  1 }
+    };
+
+    for (int picoseconds{}; ; ++picoseconds) {
+        picosecondsAtEachPosition.emplace(currentPosition, picoseconds);
+
+        if (currentPosition == end) {
+            break;
+        }
+
+        for (const Position& increment : positionIncrements) {
+            if (
+                Position newPosition{ currentPosition + increment };
+                !picosecondsAtEachPosition.contains(newPosition) &&
+                    racetrack.at(newPosition.x).at(newPosition.y) != '#'
+            ) {
+                currentPosition = newPosition;
+                break;
+            }
+        }
+    }
+    
+    int numOfCheatsThatSaveMoreThanMinPicoseconds{};
+    const int cheatLengthInPicoseconds{ 20 };
+
+    for (
+        auto positionAndPicosecondsIt{ picosecondsAtEachPosition.begin() };
+        positionAndPicosecondsIt != picosecondsAtEachPosition.end();
+        ++positionAndPicosecondsIt
+    ) {
+        const auto& [position, picoseconds] = *positionAndPicosecondsIt;
+
+        for (
+            auto positionAndPicosecondsAfterCheatIt{ positionAndPicosecondsIt };
+            positionAndPicosecondsAfterCheatIt != picosecondsAtEachPosition.end();
+            ++positionAndPicosecondsAfterCheatIt
+        ) {
+            const auto& [positionAfterCheat, picosecondsAfterCheat] = *positionAndPicosecondsAfterCheatIt;
+
+            numOfCheatsThatSaveMoreThanMinPicoseconds +=
+                positionAfterCheat.manhattanDistance(position) <= cheatLengthInPicoseconds &&
+                std::abs(picosecondsAfterCheat - picoseconds) - positionAfterCheat.manhattanDistance(position) >=
+                    minPicosecondsSaved;
+        }
+    }
+
+    return numOfCheatsThatSaveMoreThanMinPicoseconds;
 }
 
 
@@ -124,14 +196,14 @@ double measureTime(const std::function<void()>& func, int numOfRuns) {
 
 int main() {
     std::cout << "Test inputs:" << std::endl;
-    std::cout << "\tPart 1: " << solutionPart1(TEST_INPUT_PART1_PATH, 20) << std::endl;
-//    std::cout << "\tPart 2: " << solutionPart2(TEST_INPUT_PART2_PATH) << std::endl;
+    std::cout << "\tPart 1: " << solutionPart1(TEST_INPUT_PART1_PATH, 1) << std::endl;
+    std::cout << "\tPart 2: " << solutionPart2(TEST_INPUT_PART2_PATH, 70) << std::endl;
     std::cout << "My input:" << std::endl;
     std::cout << "\tPart 1: " << solutionPart1(MY_INPUT_PATH, 100) << std::endl;
-//    std::cout << "\tPart 2: " << solutionPart2(MY_INPUT_PATH) << std::endl;
+    std::cout << "\tPart 2: " << solutionPart2(MY_INPUT_PATH, 100) << std::endl;
     std::cout << "My input runtime [ms]:" << std::endl;
     std::cout << "\tPart 1: " << measureTime([](){ solutionPart1(MY_INPUT_PATH, 100); }, 1000) << std::endl;
-//    std::cout << "\tPart 2: " << measureTime([](){ solutionPart2(MY_INPUT_PATH); }, 1000) << std::endl;
+    std::cout << "\tPart 2: " << measureTime([](){ solutionPart2(MY_INPUT_PATH, 100); }, 1000) << std::endl;
 
     return 0;
 }
