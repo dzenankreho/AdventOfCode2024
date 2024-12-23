@@ -28,3 +28,4 @@ My [Advent of Code 2024](https://adventofcode.com/2024) solutions in the C++ pro
 |20|⭐⭐|[Problem](https://adventofcode.com/2024/day/20)|[Solution](Day20/main.cpp)|19.601|206.035|
 |21|⭐⭐|[Problem](https://adventofcode.com/2024/day/21)|[Solution](Day21/main.cpp)|0.163|0.264|
 |22|⭐|[Problem](https://adventofcode.com/2024/day/22)|[Solution](Day22/main.cpp)|29.427||
+|23|⭐⭐|[Problem](https://adventofcode.com/2024/day/23)|[Solution](Day23/main.cpp)|3.165|646.04|
