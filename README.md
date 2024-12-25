@@ -1,6 +1,6 @@
 # Advent of Code 2024
 
-My [Advent of Code 2024](https://adventofcode.com/2024) solutions in the C++ programming language. In addition to the source code, the runtimes for each day and part are provided below. The code was executed on an Intel Core i7-8550U CPU with 20GB of RAM, running Windows 11 Pro.
+My [Advent of Code 2024](https://adventofcode.com/2024) solutions in the C++ programming language. In addition to the source code, the runtimes for each day and part are provided below. One of the goals was for each solution to run in under a second or so. The code was executed on an Intel Core i7-8550U CPU with 20GB of RAM, running Windows 11 Pro.
 
 ## Solutions
 
